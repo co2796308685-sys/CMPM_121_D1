@@ -35,6 +35,9 @@ app.innerHTML = `
         <button id="buy-generator-power" type="button" disabled>
       Upgrade Generator Power (50 EU)
     </button>
+        <button id="buy-turbine-overhaul" type="button" disabled>
+      Turbine Overhaul (100 EU)
+    </button>
   </section>
 `;
 const button = document.querySelector<HTMLButtonElement>("#generate");
@@ -46,6 +49,9 @@ const clickButton = document.querySelector<HTMLButtonElement>(
 );
 const generatorPowerButton = document.querySelector<HTMLButtonElement>(
   "#buy-generator-power",
+);
+const turbineOverhaulButton = document.querySelector<HTMLButtonElement>(
+  "#buy-turbine-overhaul",
 );
 const energyOutput = document.querySelector<HTMLOutputElement>("#energy");
 const totalEnergyOutput = document.querySelector<HTMLOutputElement>(
@@ -68,7 +74,8 @@ app.append(image);
 if (
   !button || !generatorButton || !energyOutput || !totalEnergyOutput ||
   !generatorsOutput ||
-  !productionRateOutput || !clickButton || !generatorPowerButton
+  !productionRateOutput || !clickButton || !generatorPowerButton ||
+  !turbineOverhaulButton
 ) {
   throw new Error("Missing required elements in the DOM");
 }
@@ -77,6 +84,7 @@ function render(state: GameState): void {
   const generatorCost = getUpgradeCost(state, "generator");
   const clickCost = getUpgradeCost(state, "click");
   const generatorPowerCost = getUpgradeCost(state, "generatorPower");
+  const turbineOverhaulCost = getUpgradeCost(state, "turbineOverhaul");
   energyOutput!.textContent = state.energy.toString();
   totalEnergyOutput!.textContent = state.totalEnergyProduced.toString();
   generatorsOutput!.textContent = state.generatorCount.toString();
@@ -89,6 +97,9 @@ function render(state: GameState): void {
   generatorPowerButton!.textContent = "Upgrade Generator Power (" +
     generatorPowerCost + " EU)";
   generatorPowerButton!.disabled = state.energy < generatorPowerCost;
+  turbineOverhaulButton!.textContent = "Turbine Overhaul (" +
+    turbineOverhaulCost + " EU)";
+  turbineOverhaulButton!.disabled = state.energy < turbineOverhaulCost;
 }
 
 render(state);
@@ -110,5 +121,10 @@ clickButton.addEventListener("click", () => {
 
 generatorPowerButton.addEventListener("click", () => {
   state = purchaseUpgrade(state, "generatorPower").state;
+  render(state);
+});
+
+turbineOverhaulButton.addEventListener("click", () => {
+  state = purchaseUpgrade(state, "turbineOverhaul").state;
   render(state);
 });

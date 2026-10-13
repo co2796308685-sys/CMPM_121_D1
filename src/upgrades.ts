@@ -1,15 +1,30 @@
 import type { GameState } from "./automation.ts";
 
-export type UpgradeId =
-  | "generator"
-  | "click"
-  | "generatorPower";
-
+// Upgrade data: price and effects
 const upgradeData = {
-  generator: { baseCost: 10, multiplier: 1.15 },
-  click: { baseCost: 20, multiplier: 1.5 },
-  generatorPower: { baseCost: 50, multiplier: 2 },
-};
+  generator: {
+    baseCost: 10,
+    multiplier: 1.15,
+    effect: { field: "generatorCount", amount: 1 },
+  },
+  click: {
+    baseCost: 20,
+    multiplier: 1.5,
+    effect: { field: "clickPower", amount: 1 },
+  },
+  generatorPower: {
+    baseCost: 50,
+    multiplier: 2,
+    effect: { field: "generatorPower", amount: 1 },
+  },
+  turbineOverhaul: {
+    baseCost: 100,
+    multiplier: 1.8,
+    effect: { field: "generatorPower", amount: 2 },
+  },
+} as const;
+
+export type UpgradeId = keyof typeof upgradeData;
 
 // Calculate the price of an upgrade
 export function getUpgradeCost(
@@ -44,19 +59,9 @@ export function purchaseUpgrade(
     },
   };
 
-  switch (id) {
-    case "generator":
-      newState.generatorCount += 1;
-      break;
-
-    case "click":
-      newState.clickPower += 1;
-      break;
-
-    case "generatorPower":
-      newState.generatorPower += 1;
-      break;
-  }
+  // Apply the effect from upgrade data
+  const effect = upgradeData[id].effect;
+  newState[effect.field] += effect.amount;
 
   return { state: newState, success: true };
 }

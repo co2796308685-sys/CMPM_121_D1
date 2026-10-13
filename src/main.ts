@@ -1,6 +1,6 @@
 import { createInitialGameState } from "./state.ts";
 import { manualGenerate } from "./input.ts";
-import type { GameState } from "./automation.ts";
+import { advanceTime, type GameState } from "./automation.ts";
 
 // @deno-types="./asset-url.d.ts"
 import tileUrl from "./assets/tile.svg?no-inline";
@@ -74,12 +74,27 @@ function render(state: GameState): void {
 
 render(state);
 
+let lastTime = performance.now();
+
+function updateGameTime(): void {
+  const currentTime = performance.now();
+  const seconds = (currentTime - lastTime) / 1000;
+  lastTime = currentTime;
+
+  state = advanceTime(state, seconds);
+  render(state);
+}
+
+setInterval(updateGameTime, 100);
+
 button.addEventListener("click", () => {
+  updateGameTime();
   state = manualGenerate(state);
   render(state);
 });
 
 generatorButton.addEventListener("click", () => {
+  updateGameTime();
   state = purchaseUpgrade(state, "generator").state;
   render(state);
 });

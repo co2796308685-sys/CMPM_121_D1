@@ -29,11 +29,23 @@ app.innerHTML = `
     <button id="buy-generator" type="button" disabled>
       Buy Generator (10 EU)
     </button>
+        <button id="buy-click" type="button" disabled>
+      Upgrade Click Power (20 EU)
+    </button>
+        <button id="buy-generator-power" type="button" disabled>
+      Upgrade Generator Power (50 EU)
+    </button>
   </section>
 `;
 const button = document.querySelector<HTMLButtonElement>("#generate");
 const generatorButton = document.querySelector<HTMLButtonElement>(
   "#buy-generator",
+);
+const clickButton = document.querySelector<HTMLButtonElement>(
+  "#buy-click",
+);
+const generatorPowerButton = document.querySelector<HTMLButtonElement>(
+  "#buy-generator-power",
 );
 const energyOutput = document.querySelector<HTMLOutputElement>("#energy");
 const totalEnergyOutput = document.querySelector<HTMLOutputElement>(
@@ -56,13 +68,15 @@ app.append(image);
 if (
   !button || !generatorButton || !energyOutput || !totalEnergyOutput ||
   !generatorsOutput ||
-  !productionRateOutput
+  !productionRateOutput || !clickButton || !generatorPowerButton
 ) {
   throw new Error("Missing required elements in the DOM");
 }
 
 function render(state: GameState): void {
   const generatorCost = getUpgradeCost(state, "generator");
+  const clickCost = getUpgradeCost(state, "click");
+  const generatorPowerCost = getUpgradeCost(state, "generatorPower");
   energyOutput!.textContent = state.energy.toString();
   totalEnergyOutput!.textContent = state.totalEnergyProduced.toString();
   generatorsOutput!.textContent = state.generatorCount.toString();
@@ -70,6 +84,11 @@ function render(state: GameState): void {
     (state.generatorCount * state.generatorPower).toString();
   generatorButton!.textContent = "Buy Generator (" + generatorCost + " EU)";
   generatorButton!.disabled = state.energy < generatorCost;
+  clickButton!.textContent = "Upgrade Click Power (" + clickCost + " EU)";
+  clickButton!.disabled = state.energy < clickCost;
+  generatorPowerButton!.textContent = "Upgrade Generator Power (" +
+    generatorPowerCost + " EU)";
+  generatorPowerButton!.disabled = state.energy < generatorPowerCost;
 }
 
 render(state);
@@ -81,5 +100,15 @@ button.addEventListener("click", () => {
 
 generatorButton.addEventListener("click", () => {
   state = purchaseUpgrade(state, "generator").state;
+  render(state);
+});
+
+clickButton.addEventListener("click", () => {
+  state = purchaseUpgrade(state, "click").state;
+  render(state);
+});
+
+generatorPowerButton.addEventListener("click", () => {
+  state = purchaseUpgrade(state, "generatorPower").state;
   render(state);
 });

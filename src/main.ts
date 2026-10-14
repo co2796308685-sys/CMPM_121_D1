@@ -85,8 +85,8 @@ function render(state: GameState): void {
   const clickCost = getUpgradeCost(state, "click");
   const generatorPowerCost = getUpgradeCost(state, "generatorPower");
   const turbineOverhaulCost = getUpgradeCost(state, "turbineOverhaul");
-  energyOutput!.textContent = state.energy.toString();
-  totalEnergyOutput!.textContent = state.totalEnergyProduced.toString();
+  energyOutput!.textContent = state.energy.toFixed(2);
+  totalEnergyOutput!.textContent = state.totalEnergyProduced.toFixed(2);
   generatorsOutput!.textContent = state.generatorCount.toString();
   productionRateOutput!.textContent =
     (state.generatorCount * state.generatorPower).toString();
@@ -130,16 +130,19 @@ generatorButton.addEventListener("click", () => {
 });
 
 clickButton.addEventListener("click", () => {
+  updateGameTime();
   state = purchaseUpgrade(state, "click").state;
   render(state);
 });
 
 generatorPowerButton.addEventListener("click", () => {
+  updateGameTime();
   state = purchaseUpgrade(state, "generatorPower").state;
   render(state);
 });
 
 turbineOverhaulButton.addEventListener("click", () => {
+  updateGameTime();
   state = purchaseUpgrade(state, "turbineOverhaul").state;
   render(state);
 });
